@@ -2,24 +2,22 @@ import { Request, Response } from "express";
 import Arquivo from "./Ariquivo";
 import PacienteProps from "../types";
 
-export default class Pilha {
-  public async push(req: Request, res: Response): Promise<void> 
-  {
+export default class Fila {
+  public async append(req: Request, res: Response): Promise<void> {
     const { nome, doador } = req.params;
     const pacientes = await Arquivo.read();
-    console.log("pacientes",pacientes);
-    pacientes.push({ nome, doador:doador === "true" });
+    pacientes.push({ nome, doador: doador === 'true' });
     await Arquivo.write(pacientes);
     res.json(pacientes);
-  }
+}
 
-  public async pop(_: Request, res: Response): Promise<void> {
+
+  public async remove(_: Request, res: Response): Promise<void> {
     const pacientes = await Arquivo.read();
-    console.log("pacientes", pacientes);
     if (pacientes.length === 0) {
-        res.json("Pilha vazia");
+        res.send("Fila vazia");
     } else {
-        const paciente = pacientes.pop();
+      const paciente = pacientes.shift();
         await Arquivo.write(pacientes);
         res.json(paciente);
     }
